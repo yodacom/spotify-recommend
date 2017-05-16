@@ -4,7 +4,7 @@ var events = require("events");
 
 var getFromApi = function(endpoint, args){
 	var emitter = new events.EventEmitter();
-	unirest.get("https://api.spotify.com.v1/" + endpoint)
+	unirest.get("https://api.spotify.com/v1/" + endpoint)
     .qs(args)
     .end(function(response){
 	if (response.ok) {
@@ -21,6 +21,7 @@ var app = express();
 app.use(express.static("public"));
 
 app.get("/search/:name", function(req,res){
+	console.log(req.params);
 	var searchReq = getFromApi("search", {
 		q: req.params.name,
 		limit: 1,
@@ -28,8 +29,20 @@ app.get("/search/:name", function(req,res){
 	});
 
 	searchReq.on("end", function(item){
-		var artist = item.artist.items[0];
-		res.json(artist);
+		var artist = item.artists.items[0];
+		//we successfully retrieved an artist
+        //now find related artist
+		var relatedReq = getFromApi("artists/" + artist.id + "/related-artists", {});
+		relatedReq.on("end", function(item){
+            //successful return
+			artist.related = item.artists;
+			res.json(artist);
+		});
+		relatedReq.on("error", function(code){
+            //error occurred
+			res.sendStatus(code);
+		});
+
 	});
 
 	searchReq.on("error", function(code){
