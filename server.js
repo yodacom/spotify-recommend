@@ -6,6 +6,7 @@ var getFromApi = function(endpoint, args){
 	var emitter = new events.EventEmitter();
 	unirest.get("https://api.spotify.com/v1/" + endpoint)
     .qs(args) //?q=u2&limit=1&type=artist
+
     .end(function(response){
 
 		if (response.ok) {
@@ -41,7 +42,9 @@ async function getTopTracks(related){
 
 
 app.get("/search/:name", function(req,res){
+
     console.log(req.params);
+
 	var searchReq = getFromApi("search", {
 		q: req.params.name,
 		limit: 1,
@@ -52,6 +55,7 @@ app.get("/search/:name", function(req,res){
 		var artist = item.artists.items[0];
 		//we successfully retrieved an artist
         //now find related artist
+
         var relatedReq = getFromApi("artists/" + artist.id + "/related-artists", {});
         relatedReq.on("end", function(item){
             //successful return
@@ -64,7 +68,7 @@ app.get("/search/:name", function(req,res){
 
         });
         relatedReq.on("error", function(code){
-            //error occured
+            //error occurred
             res.sendStatus(code);
         });
 
@@ -73,7 +77,7 @@ app.get("/search/:name", function(req,res){
 	searchReq.on("error", function(code){
 		res.sendStatus(code);
 	});
-
+			
 });
 
 app.listen(process.env.PORT || 8080);
