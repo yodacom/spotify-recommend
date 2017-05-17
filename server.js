@@ -42,19 +42,20 @@ app.get("/search/:name", function(req,res){
             //error occurred
 			res.sendStatus(code);
 		});
-		// // getting artist Top Tracks
+		
+		// getting artist Top Tracks
 
-		// 	var topTracksReq = getFromApi("artists/" + artist.id + "/top-tracks" + "USA",{});
-		// 	// console.log(topTracks);
-		// 	topTracksReq.on("end", function(item){
-		// 				//successful return
-		// 		artist.topTracks = item.artists;
-		// 		res.json(artist);
-		// 	});
-		// 	topTracksReq.on("error", function(code){
-		// 			//error occurred
-		// 		res.sendStatus(code);
-		// 	});
+			var topTracksReq = getFromApi("artists/" + artist.id + "/top-tracks" + "USA",{});
+			// console.log(topTracks);
+			topTracksReq.on("end", function(item){
+						//successful return
+				artist.topTracks = item.artists;
+				res.json(artist);
+			});
+			topTracksReq.on("error", function(code){
+					//error occurred
+				res.sendStatus(code);
+			});
 	 });
 });
 
